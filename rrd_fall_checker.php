@@ -67,10 +67,14 @@ $continuosError = false;
 $result = RES_UNKNOWN;
 foreach ($now as $time=>$value)
 {
-	if (!empty($yesterday[$time]))
+	if (isset($yesterday[$time]))
 	{
 		$periodEquil++;
-		$ratio = number_format($value/$yesterday[$time],3);
+		if ($yesterday[$time] != 0)
+			$ratio = number_format($value/$yesterday[$time],3);
+		else
+			$ratio = 0;
+
 		if ($ratio < $minCritLevel)
 		{
 			$badPeriods[$time] = $ratio;
