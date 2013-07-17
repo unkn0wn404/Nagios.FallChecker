@@ -19,4 +19,4 @@ YESTERDAY=`rrdtool fetch $RRD AVERAGE -r $RRDRES \
    -e $(($TIME/$RRDRES*$RRDRES)) -s e-1h`
 if [ "$?" != "0" ];then echo Fetch RRD data failed [$RRD]!; exit 3;fi;
 
-/usr/bin/env php "`dirname $0`/rrd_fall_checker.php" "$NOW" "$YESTERDAY" $2 $3
+/usr/bin/env php "`dirname $0`/rrd_fall_checker.php" "$NOW" "$YESTERDAY" $2 $3 $4 $5

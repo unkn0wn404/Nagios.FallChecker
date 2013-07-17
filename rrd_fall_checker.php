@@ -10,10 +10,23 @@ define("RES_UNKNOWN",3);
 
 $nowData = $argv[1];
 $yesterdayData = $argv[2];
-$minLevel = (isset($argv[3])?(float)$argv[3]:null);
-$maxLevel = (isset($argv[4])?(float)$argv[4]:null);
+if (sizeof($argv) <= 5)
+{
+	$minCritLevel = (isset($argv[3])?(float)$argv[3]:null);
+	$minWarnLevel = $minCritLevel;
+	$maxCritLevel = (isset($argv[4])?(float)$argv[4]:null);
+	$maxWarnLevel = $maxCritLevel;
+}
+else
+{
+	$minCritLevel = (isset($argv[3])?(float)$argv[3]:null);
+	$minWarnLevel = (isset($argv[4])?(float)$argv[4]:null);
+	$maxCritLevel = (isset($argv[5])?(float)$argv[5]:null);
+	$maxWarnLevel = (isset($argv[6])?(float)$argv[6]:null);
+}
 
-echo "Check with min=$minLevel, max=$maxLevel. ";
+
+echo "Check with min=$minWarnLevel..$minCritLevel, max=$maxWarnLevel..$maxCritLevel; ";
 /**
  * Values are like
  *  RRD file name
@@ -51,25 +64,41 @@ $yesterday = parseFromString($yesterdayData,'H:i');
 $badPeriods = array();
 $periodEquil = 0;
 $continuosError = false;
+$result = RES_UNKNOWN;
 foreach ($now as $time=>$value)
 {
 	if (!empty($yesterday[$time]))
 	{
 		$periodEquil++;
 		$ratio = number_format($value/$yesterday[$time],3);
-		if ($minLevel && $minLevel > $ratio)
+		if ($ratio < $minCritLevel)
 		{
 			$badPeriods[$time] = $ratio;
 			$continuosError = true;
+			$result = RES_CRIT;
 		}
-		elseif ($maxLevel && $maxLevel < $ratio)
+		elseif ($ratio < $minWarnLevel)
 		{
 			$badPeriods[$time] = $ratio;
 			$continuosError = true;
+			$result = RES_WARN;
+		}
+		elseif ($maxCritLevel && $ratio > $maxCritLevel)
+		{
+			$badPeriods[$time] = $ratio;
+			$continuosError = true;
+			$result = RES_CRIT;
+		}
+		elseif ($maxCritLevel && $ratio > $maxWarnLevel)
+		{
+			$badPeriods[$time] = $ratio;
+			$continuosError = true;
+			$result = RES_WARN;
 		}
 		else
 		{
 			$continuosError = false;
+			$result = RES_OK;
 		}
 	}
 }
@@ -89,7 +118,7 @@ if (sizeof($badPeriods))
 		foreach ($badPeriods as $time => $ratio)
 			echo "[$time: $ratio];";
 
-		exit(RES_CRIT);
+		exit($result);
 	}
 	else
 	{
@@ -98,7 +127,7 @@ if (sizeof($badPeriods))
 		foreach ($badPeriods as $time => $ratio)
 			echo "[$time: $ratio];";
 
-		exit(RES_WARN);
+		exit($result);
 	}
 }
 else

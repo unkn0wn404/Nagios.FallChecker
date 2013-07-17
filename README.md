@@ -1,1 +1,1 @@
-See datails at http://toha.su/post/nagios-fallchecker/
+See details at http://toha.su/post/nagios-fallchecker/
