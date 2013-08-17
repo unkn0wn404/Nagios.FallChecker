@@ -111,7 +111,7 @@ foreach ($now as $time=>$value)
 if (!$periodEquil)
 {
 	echo "data for yesterday period does not exists or invalid";
-	exit(RES_UNKNOWN);
+	exit(RES_OK);
 }
 if (sizeof($badPeriods))
 {
