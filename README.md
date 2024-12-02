@@ -1,1 +1,1 @@
-See details at http://toha.su/post/nagios-fallchecker/
+Simple plugin to check metrics for drop compared to past period
